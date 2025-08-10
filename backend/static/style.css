@@ -1,8 +1,16 @@
+body {
+  background-color: #ABE2F4 !important;
+  margin: 0; /* removes default body margin that can cause gaps */
+  min-height: 100vh; /* ensures body fills full viewport height */
+}
+
 main {
-    display: flex;
-    gap: 40px; /* smaller, natural spacing */
-    align-items: flex-start; /* keeps article & aside aligned at the top */
-    background-color: #ABE2F4; 
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+  background-color: #ABE2F4;
+  padding: 20px;
+  border-radius: 8px; /* optional, for nicer edges */
   }
   header {
 
@@ -96,15 +104,33 @@ main {
     background-color:black; /* light blue */
     color: #ABE2F4; /* dark text for contrast */
   }
+  #inputMessage {
+    max-width: 500px;
+    margin: 20px auto;
+    padding: 10px;
+    background: #424241 ;
+    color: #ABE2F4; /* This makes typed text blue */
+  }
+  #inputMessage::placeholder {
+    color: #ABE2F4;
+  }
+
   
   #messagesContainer {
     max-width: 500px;
     margin: 20px auto;
     padding: 10px;
-    background: #fff;
+    background: transparent;
     border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    
+    transition: background-color 0.3s ease;
   }
+  
+  /* When it has child elements (messages), apply background */
+  #messagesContainer:not(:empty) {
+    background: #81a7b3;
+  }
+  
   
   #messagesContainer p {
     margin: 10px 0 5px 0;
@@ -127,3 +153,18 @@ main {
     vertical-align: middle; /* aligns them nicely */
   }
   
+  .content-area {
+    background-color: #ABE2F4;
+    padding: 4%;
+    border-radius: 8px;
+    padding-left: 20px;  /* match the horizontal spacing of the boxes */
+    padding-right: 20px;
+  }
+  
+  
+    
+  
+  /* * {
+    outline: 1px solid red !important;
+  }
+   */

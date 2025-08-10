@@ -66,3 +66,4 @@ document.getElementById('taskForm').addEventListener('submit', (event) => {
     alert('Error sending message');
   });
 });
+

@@ -44,31 +44,30 @@
                 </div>
               </nav>
         </header>
-        <main>
-            <aside>
-              <img src="../static/bigpengu.png" alt="pinguino" />
-              <h5>vidas de pengu</h5>
+        <main class="container my-4">
+          
+          <div class="row">
+            <h3>Lista de Tareas</h3>
+              <h4>Cada vez que completes una tarea, pengu gana vida!</h4>
+            <aside class="col-12 col-md-4 mb-4">
+              <img src="../static/bigpengu.png" alt="pinguino" class="img-fluid" />
+              <h5>Vidas de pengu</h5>
               <div id="heartscontainers"></div>
             </aside>
         
-            <div>
-              <h1>Lista de Tareas</h1>
-              <h4>Cada vez que completes una tarea, pengu gana vida</h4>
-              <form id="taskForm">
-                <input type="text" id="inputMessage" placeholder="Escriba su mensaje">
-                <button id="mybutton" type="submit">Agregar</button>
-              </form>
-              <div id="messagesContainer">
-
-              </div>
-            </div>
-            
-          </div>
-         
-            </div>
-
+            <div class="content-area col-12 col-md-8">
               
-          </main>
+              <form id="taskForm" class="d-flex gap-2 mb-3">
+                <input type="text" id="inputMessage" placeholder="Escriba su mensaje" class="form-control" />
+                <!-- <button id="mybutton" type="submit" class="btn btn-primary">
+                  Agregar
+                </button> -->
+              </form>
+              <div id="messagesContainer"></div>
+            </div>
+          </div>
+        </main>
+        
       <footer>
         <footer>
           <p>&copy; 2025 Estrategias Lúdicas para Estudiar. Todos los derechos reservados.</p>
