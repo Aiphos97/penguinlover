@@ -1,11 +1,14 @@
-import os
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/index.html')
+def redirect_index():
+    return redirect('/')
 
 @app.route('/asistente')
 def asistente():
