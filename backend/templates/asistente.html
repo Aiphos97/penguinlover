@@ -10,40 +10,45 @@
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
     </head>
     <body>
-        <header>
-            <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="dark">
-                <nav class="navbar navbar-expand-lg bg-body-tertiary">
-                    <div class="container-fluid">
-                      <a class="navbar-brand" href="#">Menú</a>
-                      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                      </button>
-                      <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav">
-                          <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="index.html">Inicio</a>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link" href="#">Asistente</a>
-                          </li>
-                          <li class="nav-item">
-                            <a class="nav-link" href="#">Cerrar sesion</a>
-                          </li>
-                          </li>
-                        </ul>
-                      </div>
-                    </div>
-                  </nav>
-                </nav>
+      <header>
+        <!-- Button that toggles the collapsed menu -->
+        <nav class="navbar navbar-dark bg-dark">
+          <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarToggleExternalContent"
+              aria-controls="navbarToggleExternalContent" aria-expanded="false"
+              aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+          </div>
+        </nav>
+        <!-- Collapsible content -->
+        <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="dark">
+          <nav class="navbar navbar-expand-lg bg-body-tertiary">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Menú</a>
+              <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('index') }}">Inicio</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('asistente') }}">Asistente</a>
+                  </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Iniciar sesión</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">Cerrar sesión</a>
+                  </li>
+                </ul>
               </div>
-              <nav class="navbar navbar-dark bg-dark">
-                <div class="container-fluid">
-                  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                  </button>
-                </div>
-              </nav>
-        </header>
+            </div>
+          </nav>
+        </div>
+      </header>
         <main class="container my-4">
           
           <div class="row">
@@ -81,6 +86,5 @@
         <script src="" async defer></script>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
         <script src="../static/script.js"></script>
-
     </body>
 </html>

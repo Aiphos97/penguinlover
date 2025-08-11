@@ -12,7 +12,45 @@
     </head>
     <body class="text-black" style="background-color:  #ABE2F4">
         <header>
+            <!-- Button that toggles the collapsed menu -->
+            <nav class="navbar navbar-dark bg-dark">
+              <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#navbarToggleExternalContent"
+                  aria-controls="navbarToggleExternalContent" aria-expanded="false"
+                  aria-label="Toggle navigation">
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+              </div>
+            </nav>
+            <!-- Collapsible content -->
             <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="dark">
+              <nav class="navbar navbar-expand-lg bg-body-tertiary">
+                <div class="container-fluid">
+                  <a class="navbar-brand" href="#">Menú</a>
+                  <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                      <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Inicio</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('asistente') }}">Asistente</a>
+                      </li>
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
+                      <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#">Cerrar sesión</a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </nav>
+            </div>
+          </header>
+            <!-- <div class="collapse" id="navbarToggleExternalContent" data-bs-theme="dark">
                 <nav class="navbar navbar-expand-lg bg-body-tertiary">
                     <div class="container-fluid">
                       <a class="navbar-brand" href="#">Menú</a>
@@ -43,8 +81,10 @@
                     <span class="navbar-toggler-icon"></span>
                   </button>
                 </div>
-              </nav>
+              </nav> -->
+
         </header>
+            
         <section>
             <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
                 <div class="carousel-inner">
@@ -87,8 +127,12 @@
               <img src="../static/boy_studying.jpg" alt="chico estudiando">
             </aside>
             </main> -->
+      
             <div class="clearfix container">
-              <img src="../static/boy_studying.jpg" alt="chico estudiando" class="col-md-6 float-md-end mb-3 ms-md-3" alt="...">
+              <img src="../static/boy_studying.jpg" 
+              alt="chico estudiando" 
+              class="col-md-6 float-md-end mb-3 ms-md-3 w-25">
+
             
               <h3>
                 Estrategias Lúdicas para Estudiar de Forma Más Eficiente 
@@ -111,13 +155,12 @@
                 En resumen, estudiar no tiene por qué ser monótono. Al transformar el aprendizaje en una experiencia lúdica, se aumenta la motivación, se fortalece la memoria y se logra un mejor aprovechamiento del tiempo dedicado a cada materia.
               </p>
             </div>
-      <div class="asistente-box">
-          <img src="../static/bigpengublink.gif" alt="gif de pinguino abriendo y cerrando">
-
-          <span>Prueba el asistente virtual</span>
-          <button onclick="window.location.href='/asistente'">Probar ahora</button>
-       </div>
-            
+            <div class="asistente-box">
+              <img src="../static/bigpengublink.gif" alt="gif de pinguino abriendo y cerrando">
+    
+              <span>Prueba el asistente virtual</span>
+              <button onclick="window.location.href='/asistente'">Probar ahora</button>
+           </div>
       <footer>
         <footer>
           <p>&copy; 2025 Estrategias Lúdicas para Estudiar. Todos los derechos reservados.</p>

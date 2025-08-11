@@ -4,90 +4,42 @@ from config import Config
 from models import db, User, Mascota, Tarea
 from datetime import date
 
-
-# app = Flask(__name__)
-
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
-
-# @app.route('/index.html')
-# def redirect_index():
-#     return redirect('/')
-
-# @app.route('/asistente')
-# def asistente():
-#     return render_template('asistente.html')
-
-# @app.route('/login')
-# def login():
-#     return render_template('login.html')
-
-# @app.route('/register')
-# def register():
-#     return render_template('register.html')
-
-
-
-# @app.route('/button-click', methods=['POST'])
-# def button_click():
-#     data = request.get_json()
-#     message = data.get('message', '')
-#     print(f"Received message: {message}")
-#     return "Received"
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)), debug=True)
-
 # ----------------
 # Configuración de la aplicación Flask
 # ----------------
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
-from config import Config
-from models import db, User, Mascota, Tarea
-from datetime import date
-
-
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
-    db.init_app(app)
+    db.init_app(app) 
 
     with app.app_context():
         db.create_all()
 
     @app.route('/')
-    def index():
-        return render_template('index.html')
+    def home():
+        """
+        Ruta para la página de inicio pública.
+        No requiere que el usuario esté logueado.
+        """
+        return render_template('home.html')
 
-    @app.route('/index.html')
-    def redirect_index():
-        return redirect('/')
-
-    @app.route('/asistente')
-    def asistente():
+    @app.route('/dashboard')
+    def dashboard():
+        """
+        Ruta para el panel de control del usuario.
+        Requiere que el usuario esté logueado.
+        """
         if 'user_id' not in session:
-            flash('Debes iniciar sesión para acceder al asistente.', 'warning')
+            flash('Debes iniciar sesión para acceder al panel de control.', 'warning')
             return redirect(url_for('login'))
-
-        user_id = session['user_id']
-        user = User.query.get(user_id)
-
+        
+        user = User.query.get(session['user_id'])
         if not user:
             session.clear()
-            flash('Usuario no encontrado. Por favor inicia sesión de nuevo.', 'danger')
+            flash('Cuenta no encontrada. Por favor inicia sesión de nuevo.', 'danger')
             return redirect(url_for('login'))
-
-        tareas = Tarea.query.filter_by(id_usuario=user_id).order_by(Tarea.estado).all()
-        mascota = Mascota.query.filter_by(id_usuario=user_id).first()
-
-        if not mascota:
-            mascota = Mascota(nombre_mascota='Pengu', puntos_totales=0, propietario=user)
-            db.session.add(mascota)
-            db.session.commit()
-
-        return render_template('asistente.html', user=user, mascota=mascota, tareas=tareas)
+        
+        return render_template('dashboard.html', user=user)
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -103,7 +55,7 @@ def create_app():
                 session['user_id'] = user.id_user
                 session['username'] = user.username
                 flash(f'Bienvenido, {user.username}!', 'success')
-                return redirect(url_for('asistente'))
+                return redirect(url_for('dashboard'))
             else:
                 flash('Contraseña incorrecta. Inténtalo de nuevo.', 'danger')
                 return render_template('login.html', username=username)
@@ -129,16 +81,18 @@ def create_app():
                 else:
                     flash('El email ya está registrado.', 'danger')
                 return render_template('register.html', username=username, email=email)
-
+            
+            # Crear el nuevo usuario
             password_hash = generate_password_hash(password)
             new_user = User(username=username, email=email, password_hash=password_hash)
             db.session.add(new_user)
             db.session.commit()
-
+            
+            # Crear la mascota para el nuevo usuario de forma más limpia
             new_pet = Mascota(nombre_mascota='Pengu', puntos_totales=0, propietario=new_user)
             db.session.add(new_pet)
             db.session.commit()
-
+            
             flash('Registro exitoso. Ahora puedes iniciar sesión.', 'success')
             return redirect(url_for('login'))
         return render_template('register.html')
@@ -148,28 +102,50 @@ def create_app():
         session.clear()
         flash('Has cerrado sesión correctamente.', 'info')
         return redirect(url_for('login'))
-
+        
     @app.errorhandler(404)
     def page_not_found(e):
         return render_template('404.html'), 404
 
-    @app.route('/button-click', methods=['POST'])
-    def button_click():
-        data = request.get_json()
-        message = data.get('message', '')
-        print(f"Received message: {message}")
-        return "Received"
+    # ----------------
+    # Rutas para el asistente y CRUD de Tareas
+    # ----------------
+    @app.route('/asistente')
+    def asistente():
+        """Muestra la página del asistente con las tareas del usuario y su mascota."""
+        if 'user_id' not in session:
+            flash('Debes iniciar sesión para acceder al asistente.', 'warning')
+            return redirect(url_for('login'))
+        
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        
+        if not user:
+            session.clear()
+            flash('Usuario no encontrado. Por favor inicia sesión de nuevo.', 'danger')
+            return redirect(url_for('login'))
+            
+        # Cargar las tareas del usuario ordenadas por estado (no completadas primero)
+        tareas = Tarea.query.filter_by(id_usuario=user_id).order_by(Tarea.estado).all()
+        mascota = Mascota.query.filter_by(id_usuario=user_id).first()
+        
+        # Si el usuario no tiene mascota, crear una
+        if not mascota:
+            mascota = Mascota(nombre_mascota='Pengu', puntos_totales=0, propietario=user)
+            db.session.add(mascota)
+            db.session.commit()
 
-    # --- Tareas CRUD routes ---
+        return render_template('asistente.html', user=user, mascota=mascota, tareas=tareas)
 
     @app.route('/tareas/agregar', methods=['POST'])
     def agregar_tarea():
+        """Ruta API para agregar una nueva tarea."""
         if 'user_id' not in session:
             return jsonify({'success': False, 'message': 'No autorizado.'}), 401
-
+        
         data = request.json
         descripcion = data.get('descripcion')
-        puntos = data.get('puntos', 1)
+        puntos = data.get('puntos', 1)  # Valor por defecto
         fecha_limite_str = data.get('fecha_limite')
 
         if not descripcion:
@@ -190,7 +166,7 @@ def create_app():
         )
         db.session.add(nueva_tarea)
         db.session.commit()
-
+        
         return jsonify({
             'success': True,
             'message': 'Tarea agregada correctamente.',
@@ -206,16 +182,17 @@ def create_app():
 
     @app.route('/tareas/completar/<int:id_tarea>', methods=['POST'])
     def completar_tarea(id_tarea):
+        """Ruta API para marcar una tarea como completada y sumar puntos."""
         if 'user_id' not in session:
             return jsonify({'success': False, 'message': 'No autorizado.'}), 401
-
+        
         tarea = Tarea.query.get(id_tarea)
         if not tarea or tarea.id_usuario != session['user_id']:
             return jsonify({'success': False, 'message': 'Tarea no encontrada o no tienes permisos.'}), 404
-
+            
         if not tarea.estado:
             tarea.estado = True
-
+            
             mascota = Mascota.query.filter_by(id_usuario=session['user_id']).first()
             if mascota:
                 mascota.puntos_totales += tarea.puntos_tarea
@@ -233,26 +210,29 @@ def create_app():
                 },
                 'puntos_mascota': mascota.puntos_totales
             })
-
+        
         return jsonify({'success': False, 'message': 'La tarea ya estaba completada.'}), 200
 
     @app.route('/tareas/eliminar/<int:id_tarea>', methods=['DELETE'])
     def eliminar_tarea(id_tarea):
+        """Ruta API para eliminar una tarea."""
         if 'user_id' not in session:
             return jsonify({'success': False, 'message': 'No autorizado.'}), 401
-
+            
         tarea = Tarea.query.get(id_tarea)
         if not tarea or tarea.id_usuario != session['user_id']:
             return jsonify({'success': False, 'message': 'Tarea no encontrada o no tienes permisos.'}), 404
-
+            
         db.session.delete(tarea)
         db.session.commit()
-
+        
         return jsonify({'success': True, 'message': 'Tarea eliminada correctamente.'}), 200
 
     return app
 
-
+# -----------------
+# Inicio de la aplicación
+# -----------------
 if __name__ == '__main__':
     app = create_app()
     app.run(debug=True)
