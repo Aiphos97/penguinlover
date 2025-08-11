@@ -241,10 +241,8 @@ def login_required(f):
 
 @app.route('/')
 def index():
-    if 'user_id' in session:
-        return redirect('/asistente')
-    else:
-        return redirect('/login')
+    return render_template('index.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -291,10 +289,12 @@ def logout():
     return redirect('/login')
 
 @app.route('/asistente')
-@login_required
 def asistente():
-    # Pass username to template if you want
+    if 'user_id' not in session:
+        return redirect('/login')
+    # If logged in, render asistente page with username, etc.
     return render_template('asistente.html', username=session.get('username'))
+
 
 @app.route('/button-click', methods=['POST'])
 @login_required
