@@ -243,6 +243,10 @@ def login_required(f):
 def index():
     return render_template('index.html')
 
+@app.route('/videoteca')
+def videoteca():
+    return render_template('videoteca.html')
+
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
