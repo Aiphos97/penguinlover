@@ -132,33 +132,37 @@ function addTaskToDOM(messageObj) {
     messagesContainer.appendChild(taskDiv);
 
     taskButton.addEventListener('click', () => {
-      // Call backend to mark complete
-      fetch(`/complete-task/${id}`, {
-        method: 'POST',
-      })
-      .then(response => {
-        if (!response.ok) throw new Error('Failed to mark completed');
-        
-        // Move task to completed container
-        completedContainer.appendChild(taskDiv);
-        taskButton.disabled = true;
-        taskButton.textContent = 'Completada';
-
-        // Add a heart only if less than 5 hearts shown
-        if (imagesShown < 5) {
-          const heartsContainer = document.getElementById('heartscontainers');
-          const img = document.createElement('img');
-          img.src = frames[currentFrame];
-          img.alt = 'Heart animation frame';
-          img.style.marginRight = '5px';
-          heartsContainer.appendChild(img);
-
-          currentFrame = (currentFrame + 1) % frames.length;
-          imagesShown++;
-        }
-      })
-      .catch(() => alert('Error marking task as completed'));
+      fetch(`/complete-task/${id}`, { method: 'POST' })
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to mark completed');
+    
+          completedContainer.appendChild(taskDiv);
+          taskButton.disabled = true;
+          taskButton.textContent = 'Completada';
+    
+          // Fetch and render updated vidas (hearts)
+          fetch('/get_vidas')
+            .then(res => res.json())
+            .then(data => {
+              const vidas = data.vidas || 0;
+              const heartsContainer = document.getElementById('heartscontainers');
+              heartsContainer.innerHTML = ''; // clear previous hearts
+    
+              for (let i = 0; i < vidas && i < frames.length; i++) {
+                const img = document.createElement('img');
+                img.src = frames[i];
+                img.alt = 'Heart animation frame';
+                img.style.marginRight = '5px';
+                heartsContainer.appendChild(img);
+              }
+    
+              imagesShown = vidas;
+              currentFrame = vidas % frames.length;
+            });
+        })
+        .catch(() => alert('Error marking task as completed'));
     });
+    
   }
 
   taskDiv.appendChild(taskText);
@@ -167,17 +171,38 @@ function addTaskToDOM(messageObj) {
 
 // Load existing tasks from backend, do NOT add hearts here for completed tasks
 window.addEventListener('DOMContentLoaded', () => {
+  // Existing: fetch tasks and add them
   fetch('/messages')
     .then(response => response.json())
     .then(data => {
-      data.messages.forEach(msg => {
-        addTaskToDOM(msg);
-      });
+      data.messages.forEach(msg => addTaskToDOM(msg));
     })
-    .catch(() => {
-      console.error('Error loading messages');
+    .catch(() => console.error('Error loading messages'));
+
+  // NEW: fetch vidas and render hearts
+  fetch('/get_vidas')
+    .then(res => res.json())
+    .then(data => {
+      const vidas = data.vidas || 0;
+      const heartsContainer = document.getElementById('heartscontainers');
+      heartsContainer.innerHTML = ''; // clear old hearts
+
+      for (let i = 0; i < vidas && i < frames.length; i++) {
+        const img = document.createElement('img');
+        img.src = frames[i];
+        img.alt = 'Heart animation frame';
+        img.style.marginRight = '5px';
+        heartsContainer.appendChild(img);
+      }
+
+      imagesShown = vidas;
+      currentFrame = vidas % frames.length;
+    })
+    .catch(err => {
+      console.error('Error fetching vidas:', err);
     });
 });
+
 
 // Handle new task submissions
 document.getElementById('taskForm').addEventListener('submit', (event) => {

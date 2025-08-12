@@ -259,11 +259,20 @@ def register():
                 (username, email, hashed_password)
             )
             db.commit()
+
+            # Get the new user's ID
+            user = db.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+
+            # Assign a new unique mascota to this user
+            create_and_assign_mascota(user['id'])
+
             return redirect('/login')
         except sqlite3.IntegrityError:
             return "Username or email already exists."
 
     return render_template('register.html')
+
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -317,14 +326,73 @@ def messages():
     rows = cursor.fetchall()
     return jsonify({'messages': [dict(row) for row in rows]})
 
+# @app.route('/complete-task/<int:message_id>', methods=['POST'])
+# @login_required
+# def complete_task(message_id):
+#     db = get_db()
+#     cursor = db.cursor()
+#     cursor.execute("UPDATE messages SET completed = 1 WHERE id = ? AND user_id = ?", (message_id, session['user_id']))
+#     db.commit()
+#     return "Task marked as completed!"
 @app.route('/complete-task/<int:message_id>', methods=['POST'])
 @login_required
 def complete_task(message_id):
     db = get_db()
     cursor = db.cursor()
-    cursor.execute("UPDATE messages SET completed = 1 WHERE id = ? AND user_id = ?", (message_id, session['user_id']))
+    # Mark the task completed
+    cursor.execute(
+        "UPDATE messages SET completed = 1 WHERE id = ? AND user_id = ?",
+        (message_id, session['user_id'])
+    )
+    # Increment pet vidas by 1 for this user
+    cursor.execute("""
+        UPDATE mascotas
+        SET vidas = vidas + 1
+        WHERE id IN (
+            SELECT mascota_id FROM user_mascotas WHERE user_id = ?
+        )
+    """, (session['user_id'],))
     db.commit()
-    return "Task marked as completed!"
+    return "Task marked completed and pet vidas incremented!"
+
+
+
+def create_and_assign_mascota(user_id, mascota_name='Pengu', image='pengu.png', mood='happy', vidas=0):
+    db = get_db()
+    cursor = db.cursor()
+
+    # Create a new mascota for this user
+    cursor.execute(
+        "INSERT INTO mascotas (name, image, mood, vidas) VALUES (?, ?, ?, ?)",
+        (mascota_name, image, mood, vidas)
+    )
+    db.commit()
+    mascota_id = cursor.lastrowid
+
+    # Link mascota to user
+    cursor.execute(
+        "INSERT INTO user_mascotas (user_id, mascota_id) VALUES (?, ?)",
+        (user_id, mascota_id)
+    )
+    db.commit()
+
+    return mascota_id
+
+@app.route('/get_vidas')
+@login_required
+def get_vidas():
+    db = get_db()
+    cursor = db.cursor()
+    # Get the mascota ID linked to the user
+    mascota = cursor.execute("""
+        SELECT m.vidas FROM mascotas m
+        JOIN user_mascotas um ON m.id = um.mascota_id
+        WHERE um.user_id = ?
+    """, (session['user_id'],)).fetchone()
+
+    vidas = mascota['vidas'] if mascota else 0
+    return jsonify({'vidas': vidas})
+
 
 if __name__ == '__main__':
     init_db()
