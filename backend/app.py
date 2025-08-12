@@ -392,7 +392,61 @@ def get_vidas():
 
     vidas = mascota['vidas'] if mascota else 0
     return jsonify({'vidas': vidas})
+@app.route('/delete-completed-tasks', methods=['POST'])
+@login_required
+def delete_completed_tasks():
+    db = get_db()
+    cursor = db.cursor()
+    # Delete all completed tasks of the logged-in user
+    cursor.execute("DELETE FROM messages WHERE user_id = ? AND completed = 1", (session['user_id'],))
+    # Reset vidas (hearts) for user's mascotas to 0
+    cursor.execute("""
+        UPDATE mascotas
+        SET vidas = 0
+        WHERE id IN (
+            SELECT mascota_id FROM user_mascotas WHERE user_id = ?
+        )
+    """, (session['user_id'],))
+    db.commit()
+    return "Completed tasks deleted and hearts reset!"
 
+@app.route('/delete-task/<int:task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    try:
+        db = get_db()  # Assuming you have this helper function
+        cursor = db.cursor()
+
+        # Delete the task by id
+        cursor.execute("DELETE FROM messages WHERE id = ?", (task_id,))
+        db.commit()
+
+        return '', 204  # Success, no content
+
+    except Exception as e:
+        print(f"Error deleting task: {e}")
+        return 'Error deleting task', 500
+@app.route('/edit-task/<int:task_id>', methods=['POST'])
+def edit_task(task_id):
+    try:
+        data = request.get_json()
+        new_content = data.get('content', '').strip()
+        if not new_content:
+            return 'Content cannot be empty', 400
+
+        db = get_db()  # Your DB connection helper
+        cursor = db.cursor()
+
+        cursor.execute("UPDATE messages SET content = ? WHERE id = ?", (new_content, task_id))
+        db.commit()
+
+        if cursor.rowcount == 0:
+            return 'Task not found', 404
+
+        return '', 204  # Success, no content
+
+    except Exception as e:
+        print(f"Error editing task: {e}")
+        return 'Error editing task', 500
 
 if __name__ == '__main__':
     init_db()

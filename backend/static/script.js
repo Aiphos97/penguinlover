@@ -1,124 +1,5 @@
 
 
-
-
-// const frames = [
-//   '/static/hearts.png',
-//   '/static/hearts.png',
-//   '/static/hearts.png',
-//   '/static/hearts.png',
-//   '/static/hearts.png',
-// ];
-
-// let currentFrame = 0;
-// let imagesShown = 0;
-
-// // Function to create a task div with complete button
-// function addTaskToDOM(messageObj) {
-//   const { id, content, completed } = messageObj;
-//   const messagesContainer = document.getElementById('messagesContainer');
-//   const completedContainer = document.getElementById('completedTasksContainer');
-
-//   const taskDiv = document.createElement('div');
-//   taskDiv.style.display = 'flex';
-//   taskDiv.style.alignItems = 'center';
-//   taskDiv.style.marginBottom = '8px';
-
-//   const taskText = document.createElement('span');
-//   taskText.textContent = content;
-//   taskText.style.flexGrow = '1';
-
-//   const taskButton = document.createElement('button');
-//   taskButton.style.marginLeft = '10px';
-
-//   if (completed) {
-//     // Already completed: disable button and move to completed container
-//     taskButton.textContent = 'Completada';
-//     taskButton.disabled = true;
-//     completedContainer.appendChild(taskDiv);
-//   } else {
-//     // Not completed: normal button
-//     taskButton.textContent = 'Completar';
-//     messagesContainer.appendChild(taskDiv);
-
-//     taskButton.addEventListener('click', () => {
-//       fetch(`/complete-task/${id}`, { method: 'POST' })
-//         .then(response => {
-//           if (!response.ok) throw new Error('Failed to mark completed');
-    
-//           // Move task to completed container and update button state
-//           completedContainer.appendChild(taskDiv);
-//           taskButton.disabled = true;
-//           taskButton.textContent = 'Completada';
-    
-//           // Fetch updated vidas from backend and re-render hearts
-//           fetch('/get_vidas')
-//             .then(res => res.json())
-//             .then(data => {
-//               const vidas = data.vidas || 0;
-//               const heartsContainer = document.getElementById('heartscontainers');
-//               heartsContainer.innerHTML = ''; // Clear existing hearts
-//               for (let i = 0; i < vidas && i < frames.length; i++) {
-//                 const img = document.createElement('img');
-//                 img.src = frames[i];
-//                 img.alt = 'Heart animation frame';
-//                 img.style.marginRight = '5px';
-//                 heartsContainer.appendChild(img);
-//               }
-//               imagesShown = vidas;
-//               currentFrame = vidas % frames.length;
-//             });
-//         })
-//         .catch(() => alert('Error marking task as completed'));
-//     });
-    
-//   }
-
-//   taskDiv.appendChild(taskText);
-//   taskDiv.appendChild(taskButton);
-// }
-
-// // Load existing tasks from backend, do NOT add hearts here for completed tasks
-
-
-// // Handle new task submissions
-// document.getElementById('taskForm').addEventListener('submit', (event) => {
-//   event.preventDefault();
-
-//   const input = document.getElementById('inputMessage');
-//   const message = input.value.trim();
-//   if (message === "") return;
-
-//   fetch('/button-click', {
-//     method: 'POST',
-//     headers: { 'Content-Type': 'application/json' },
-//     body: JSON.stringify({ message }),
-//   })
-//   .then(response => {
-//     if (!response.ok) throw new Error('Network response was not ok');
-//     return response.text();
-//   })
-//   .then(() => {
-//     // Fetch messages again to get the new task with ID and completed=0
-//     fetch('/messages')
-//       .then(response => response.json())
-//       .then(data => {
-//         // Clear tasks to avoid duplicates, then re-add all
-//         document.getElementById('messagesContainer').innerHTML = '';
-//         document.getElementById('completedTasksContainer').innerHTML = '';
-//         imagesShown = 0; // reset hearts count on reload
-//         currentFrame = 0;
-//         data.messages.forEach(msg => {
-//           addTaskToDOM(msg);
-//         });
-//       });
-//     input.value = '';
-//   })
-//   .catch(() => {
-//     alert('Error sending message');
-//   });
-// });
-
 const frames = [
   '/static/hearts.png',
   '/static/hearts.png',
@@ -291,4 +172,19 @@ document.getElementById('taskForm').addEventListener('submit', (event) => {
     input.value = '';
   })
   .catch(() => alert('Error sending message'));
+});
+
+
+document.getElementById('deleteCompletedBtn').addEventListener('click', () => {
+  if (confirm('¿Estás seguro de eliminar todas las tareas completadas y reiniciar los corazones?')) {
+    fetch('/delete-completed-tasks', { method: 'POST' })
+      .then(response => {
+        if (!response.ok) throw new Error('Error eliminando tareas completadas');
+        // Clear completed tasks container and hearts container in UI
+        document.getElementById('completedTasksContainer').innerHTML = '';
+        document.getElementById('heartscontainers').innerHTML = '';
+        alert('Tareas completadas eliminadas y corazones reiniciados');
+      })
+      .catch(() => alert('Error al eliminar tareas completadas'));
+  }
 });
