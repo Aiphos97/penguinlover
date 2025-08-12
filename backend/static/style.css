@@ -1,3 +1,10 @@
+:root {
+  --my-orange: #FA7305;
+  --my-green: #81a7b3;
+  --my-blue: #ABE2F4;
+  --my-black: #424241;
+}
+
 body {
   background-color: #ABE2F4 !important;
   margin: 0; /* removes default body margin that can cause gaps */
@@ -61,6 +68,16 @@ main {
   footer nav a:hover {
     color: #FA7305; /* orange accent */
   }
+  .navbar-brand {
+    color: var(--my-orange)!important;      /* Example: your orange color */
+    font-weight: bold;            /* Make it bold */
+    font-size: 1.5rem;            /* Adjust size */
+    text-transform: uppercase;    /* Optional: uppercase letters */
+    letter-spacing: 1px;          /* Optional: space between letters */
+    text-decoration: none;        /* Remove underline */
+    transition: color 0.3s ease;
+  }
+  
   /* Navbar background to match footer */
 .navbar {
     background-color:#424241!important;
@@ -76,7 +93,16 @@ main {
   .navbar .nav-link:hover {
     color: #FA7305 !important; /* orange from palette */
   }
-  
+  /* Make the "Regístrate aquí" link orange */
+p a {
+  color: var(--my-blue);
+  text-decoration: none; /* optional, removes underline */
+}
+
+p a:hover {
+  text-decoration: underline; /* optional, underline on hover */
+}
+
   .asistente-box {
     background-color: #FA7305; /* teal from your palette */
     color: black;
@@ -161,8 +187,23 @@ main {
     padding-right: 20px;
   }
   
-  
-    
+  .orange-card {
+    background-color: var(--my-green) !important;
+    color: #424241;
+  }
+
+  .btn-custom {
+    background-color: #424241;
+    color: white;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn-custom:hover,
+.btn-custom:focus {
+    background-color: #424241 ; 
+    color :var(--my-blue);
+}
   
   /* * {
     outline: 1px solid red !important;
